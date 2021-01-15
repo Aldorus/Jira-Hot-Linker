@@ -108,7 +108,7 @@ async function mainAsyncLocal() {
   }
 
   function getIssueMetaData(issueKey) {
-    return get(INSTANCE_URL + 'rest/api/2/issue/' + issueKey + '?fields=description,id,reporter,assignee,summary,attachment,comment,issuetype,status,priority&expand=renderedFields');
+    return get(INSTANCE_URL + 'rest/api/2/issue/' + issueKey + '?fields=description,id,assignee,summary,attachment,fixVersions,issuetype,status&expand=renderedFields');
   }
 
   function getRelativeHref(href) {
@@ -253,6 +253,14 @@ async function mainAsyncLocal() {
               comment => comment.author.displayName + ':\n' + comment.body
             ).join('\n\n');
           }
+          
+          let fixVersions = '';
+          if (issueData.fields.fixVersions && issueData.fields.fixVersions.length) {
+            fixVersions = issueData.fields.fixVersions.map(
+              version => version.name
+            ).join('\n\n');
+          }
+          
           const displayData = {
             urlTitle: key + ' ' + issueData.fields.summary,
             url: INSTANCE_URL + 'browse/' + key,
@@ -266,6 +274,7 @@ async function mainAsyncLocal() {
             reporter: issueData.fields.reporter,
             assignee: issueData.fields.assignee,
             comments,
+            fixVersions,
             loaderGifUrl,
             size,
             forEach
